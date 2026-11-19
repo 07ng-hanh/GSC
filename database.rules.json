@@ -1,0 +1,136 @@
+{
+  "rules": {
+    ".read": false,
+    ".write": false,
+    "farms": {
+      "$farmId": {
+        ".read": "auth != null",
+        "nodes": {
+          "$nodeId": {
+            ".write": "auth != null",
+            ".validate": "newData.hasChildren(['deviceId', 'zoneId', 'lastSeenTs'])",
+            "deviceId": {
+              ".validate": "newData.isString() && newData.val().length > 0"
+            },
+            "zoneId": {
+              ".validate": "newData.isString() && newData.val().length > 0"
+            },
+            "lastSeenTs": {
+              ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$/)"
+            },
+            "rssiDbm": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= -120 && newData.val() <= 0)"
+            },
+            "batteryV": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 6.0)"
+            },
+            "firmware": {
+              ".validate": "!newData.exists() || newData.isString()"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "telemetry": {
+          "$zoneId": {
+            "$timestampMs": {
+              ".write": "auth != null",
+              ".validate": "newData.hasChildren(['ts', 'deviceId', 'tempC', 'rhPct'])",
+              "ts": {
+                ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$/)"
+              },
+              "deviceId": {
+                ".validate": "newData.isString() && newData.val().length > 0"
+              },
+              "tempC": {
+                ".validate": "newData.isNumber() && newData.val() >= -10 && newData.val() <= 60"
+              },
+              "rhPct": {
+                ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+              },
+              "thi": {
+                ".validate": "!newData.exists() || newData.isNumber()"
+              },
+              "seq": {
+                ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+              },
+              "batteryV": {
+                ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 6.0)"
+              },
+              "rssiDbm": {
+                ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= -120 && newData.val() <= 0)"
+              },
+              "$other": {
+                ".validate": false
+              }
+            }
+          }
+        },
+        "latest": {
+          "$zoneId": {
+            ".write": "auth != null",
+            ".validate": "newData.hasChildren(['ts', 'deviceId', 'tempC', 'rhPct'])",
+            "ts": {
+              ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$/)"
+            },
+            "deviceId": {
+              ".validate": "newData.isString() && newData.val().length > 0"
+            },
+            "tempC": {
+              ".validate": "newData.isNumber() && newData.val() >= -10 && newData.val() <= 60"
+            },
+            "rhPct": {
+              ".validate": "newData.isNumber() && newData.val() >= 0 && newData.val() <= 100"
+            },
+            "thi": {
+              ".validate": "!newData.exists() || newData.isNumber()"
+            },
+            "seq": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0)"
+            },
+            "batteryV": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 6.0)"
+            },
+            "rssiDbm": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= -120 && newData.val() <= 0)"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        },
+        "actuators": {
+          ".write": "auth != null",
+          "$zoneId": {
+            ".validate": "newData.hasChildren(['fan', 'mist', 'curtain', 'mode', 'updatedAtUtc'])",
+            "fan": {
+              ".validate": "newData.isBoolean()"
+            },
+            "fanLevel": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 100)"
+            },
+            "mist": {
+              ".validate": "newData.isBoolean()"
+            },
+            "mistDutyFactor": {
+              ".validate": "!newData.exists() || (newData.isNumber() && newData.val() >= 0 && newData.val() <= 1.0)"
+            },
+            "curtain": {
+              ".validate": "newData.isBoolean()"
+            },
+            "mode": {
+              ".validate": "newData.val() === 'auto' || newData.val() === 'manual'"
+            },
+            "updatedAtUtc": {
+              ".validate": "newData.isString() && newData.val().matches(/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}(\\.\\d+)?Z$/)"
+            },
+            "$other": {
+              ".validate": false
+            }
+          }
+        }
+      }
+    }
+  }
+}
