@@ -163,3 +163,5 @@ For detailed architecture and setup guides, refer to:
 
 This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
 Weather forecast data provided by [Open-Meteo.com](https://open-meteo.com/) under [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+#   G S C  
+ 
