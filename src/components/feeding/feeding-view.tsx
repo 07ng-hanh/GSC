@@ -1318,12 +1318,19 @@ export function FeedingView() {
                     {rec.summary}
                   </p>
 
-                  {/* Action & Targets */}
-                  <div className="rounded-md bg-muted/40 p-2.5 text-xs space-y-1.5">
-                    <div>
-                      <span className="font-bold">Suggested Direction: </span>
-                      <span>{rec.actionHint}</span>
+                  {/* Farmer Action Summary */}
+                  <div className="rounded-md border border-emerald-300 bg-emerald-50/80 p-2.5 text-xs space-y-1 text-emerald-950">
+                    <div className="flex items-center gap-1.5 font-bold text-emerald-900">
+                      <CheckCircle2 className="h-3.5 w-3.5 text-emerald-700 shrink-0" />
+                      <span>Farm Action Required:</span>
                     </div>
+                    <div className="font-medium text-emerald-950 leading-relaxed">
+                      {rec.actionHint}
+                    </div>
+                  </div>
+
+                  {/* Targets & Caution */}
+                  <div className="rounded-md bg-muted/40 p-2.5 text-xs space-y-1.5">
                     <div className="flex flex-wrap gap-1.5">
                       {rec.targetMetrics.map((metric) => (
                         <span

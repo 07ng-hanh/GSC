@@ -33,11 +33,11 @@ export function CoopSvgMap({
   const indoorZones = zones.filter((z) => !z.isOutdoorReference);
   const outdoorZones = zones.filter((z) => z.isOutdoorReference);
 
-  // Coop 2D Floorplan geometry
-  const coopX = 56;
-  const coopY = 44;
-  const coopW = 688;
-  const coopH = 196;
+  // Coop 2D Floorplan geometry - compact with minimal vertical whitespace
+  const coopX = 48;
+  const coopY = 12;
+  const coopW = 704;
+  const coopH = 136;
   const zoneCount = Math.max(1, indoorZones.length);
   const zoneW = coopW / zoneCount;
 
@@ -97,11 +97,11 @@ export function CoopSvgMap({
           <circle
             cx={cx}
             cy={cy}
-            r={26}
+            r={22}
             fill={dotHex}
             fillOpacity={0.18}
             stroke="#0f172a"
-            strokeWidth={2.5}
+            strokeWidth={2}
           />
         )}
 
@@ -109,32 +109,32 @@ export function CoopSvgMap({
         <circle
           cx={cx}
           cy={cy}
-          r={20}
+          r={16}
           fill="#ffffff"
           stroke={dotHex}
-          strokeWidth={isSelected ? 3.5 : 2.5}
+          strokeWidth={isSelected ? 3 : 2}
         />
 
         {/* Core circular sensor dot */}
-        <circle cx={cx} cy={cy} r={12} fill={dotHex} />
+        <circle cx={cx} cy={cy} r={9} fill={dotHex} />
 
         {/* Compact THI + text status pill below the dot */}
         <rect
-          x={cx - 64}
-          y={cy + 27}
-          width={128}
-          height={22}
-          rx={11}
+          x={cx - 54}
+          y={cy + 17}
+          width={108}
+          height={18}
+          rx={9}
           fill="#ffffff"
           stroke={isSelected ? "#0f172a" : "#cbd5e1"}
-          strokeWidth={isSelected ? 1.8 : 1}
+          strokeWidth={isSelected ? 1.5 : 1}
         />
         <text
           x={cx}
-          y={cy + 41.5}
+          y={cy + 29.5}
           textAnchor="middle"
           fill="#0f172a"
-          fontSize="10.2"
+          fontSize="9.5"
           fontWeight="700"
         >
           {thiText} · {statusShort}
@@ -144,35 +144,35 @@ export function CoopSvgMap({
   };
 
   return (
-    <Card className="h-full flex flex-col justify-between">
-      <CardHeader className="p-4 pb-2 flex flex-row flex-wrap items-center justify-between gap-2 space-y-0">
+    <Card>
+      <CardHeader className="p-3 pb-1 flex flex-row flex-wrap items-center justify-between gap-2 space-y-0">
         <div>
-          <CardTitle className="text-base">
+          <CardTitle className="text-sm font-bold">
             {MESSAGES_EN.overview.coopMapTitle}
           </CardTitle>
-          <p className="text-xs text-muted-foreground mt-0.5">
+          <p className="text-[11px] text-muted-foreground mt-0.5">
             {MESSAGES_EN.overview.coopMapHint}
           </p>
         </div>
 
         {/* Minimal Architectural Legend */}
-        <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
+        <div className="flex flex-wrap items-center gap-2.5 text-[10px] text-muted-foreground">
           <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2.5 w-4 rounded-sm border border-sky-500 bg-sky-100" />
+            <span className="inline-block h-2 w-3.5 rounded-xs border border-sky-500 bg-sky-100" />
             {MESSAGES_EN.overview.mapLegendWindow}
           </span>
           <span className="inline-flex items-center gap-1">
-            <span className="inline-block h-2.5 w-3 border-b-2 border-amber-700" />
+            <span className="inline-block h-2 w-2.5 border-b-2 border-amber-700" />
             {MESSAGES_EN.overview.mapLegendDoor}
           </span>
         </div>
       </CardHeader>
 
-      <CardContent className="p-4 pt-1">
+      <CardContent className="p-3 pt-0">
         <div className="w-full overflow-x-auto">
           <svg
-            viewBox="0 0 800 330"
-            className="w-full min-w-[540px] h-auto select-none"
+            viewBox="0 0 800 210"
+            className="w-full min-w-[500px] h-auto select-none"
             role="group"
             aria-label="2D Broiler Coop Floorplan with sensor dots"
           >
@@ -217,10 +217,10 @@ export function CoopSvgMap({
                   )}
                   <text
                     x={zx + zoneW / 2}
-                    y={coopY + 24}
+                    y={coopY + 18}
                     textAnchor="middle"
                     fill="#334155"
-                    fontSize="12"
+                    fontSize="11"
                     fontWeight="700"
                   >
                     {zone.shortLabel}
@@ -228,22 +228,22 @@ export function CoopSvgMap({
 
                   {/* Compact Equipment Status Chips inside the Zone */}
                   {cooling && (
-                    <g transform={`translate(${zx + zoneW / 2 - 68}, ${coopY + coopH - 26})`}>
+                    <g transform={`translate(${zx + zoneW / 2 - 64}, ${coopY + coopH - 22})`}>
                       {/* Fan chip */}
                       <rect
                         x={0}
                         y={0}
-                        width={42}
-                        height={16}
-                        rx={4}
+                        width={40}
+                        height={15}
+                        rx={3.5}
                         fill={cooling.fan ? "#0284c7" : "#e2e8f0"}
                       />
                       <text
-                        x={21}
-                        y={11.5}
+                        x={20}
+                        y={11}
                         textAnchor="middle"
                         fill={cooling.fan ? "#ffffff" : "#64748b"}
-                        fontSize="9"
+                        fontSize="8.5"
                         fontWeight="700"
                       >
                         {cooling.fan
@@ -255,11 +255,11 @@ export function CoopSvgMap({
 
                       {/* Mist chip */}
                       <rect
-                        x={46}
+                        x={44}
                         y={0}
-                        width={44}
-                        height={16}
-                        rx={4}
+                        width={42}
+                        height={15}
+                        rx={3.5}
                         fill={
                           cooling.mist && cooling.mistLockedByHumidity
                             ? "#dc2626"
@@ -271,8 +271,8 @@ export function CoopSvgMap({
                         }
                       />
                       <text
-                        x={68}
-                        y={11.5}
+                        x={65}
+                        y={11}
                         textAnchor="middle"
                         fill={
                           cooling.mist && cooling.mistLockedByHumidity
@@ -283,7 +283,7 @@ export function CoopSvgMap({
                                 ? "#ffffff"
                                 : "#64748b"
                         }
-                        fontSize="9"
+                        fontSize="8.5"
                         fontWeight="700"
                       >
                         {cooling.mist && cooling.mistLockedByHumidity
@@ -293,19 +293,19 @@ export function CoopSvgMap({
 
                       {/* Curtain chip */}
                       <rect
-                        x={94}
+                        x={90}
                         y={0}
-                        width={42}
-                        height={16}
-                        rx={4}
+                        width={38}
+                        height={15}
+                        rx={3.5}
                         fill={cooling.curtain ? "#7c3aed" : "#e2e8f0"}
                       />
                       <text
-                        x={115}
-                        y={11.5}
+                        x={109}
+                        y={11}
                         textAnchor="middle"
                         fill={cooling.curtain ? "#ffffff" : "#64748b"}
-                        fontSize="9"
+                        fontSize="8.5"
                         fontWeight="700"
                       >
                         Curt {cooling.curtain ? "ON" : "OFF"}
@@ -324,72 +324,72 @@ export function CoopSvgMap({
               height={coopH}
               fill="none"
               stroke="#334155"
-              strokeWidth="4"
+              strokeWidth="3.5"
               rx="4"
             />
 
             {/* 3. Left Cooling Pad Inlet Wall */}
             <rect
-              x={coopX - 18}
-              y={coopY + 22}
-              width={16}
-              height={coopH - 44}
-              rx="3"
+              x={coopX - 16}
+              y={coopY + 16}
+              width={14}
+              height={coopH - 32}
+              rx="2.5"
               fill="#bae6fd"
               stroke="#0284c7"
               strokeWidth="1.5"
             />
             <text
-              x={24}
+              x={18}
               y={coopY + coopH / 2}
               textAnchor="middle"
               fill="#0369a1"
-              fontSize="10"
+              fontSize="9.5"
               fontWeight="700"
-              transform={`rotate(-90 24 ${coopY + coopH / 2})`}
+              transform={`rotate(-90 18 ${coopY + coopH / 2})`}
             >
               {MESSAGES_EN.overview.mapLegendInlet}
             </text>
 
             {/* 4. Right Exhaust Fan Bank Wall */}
-            {[coopY + 34, coopY + 90, coopY + 146].map((fy, i) => (
+            {[coopY + 14, coopY + 54, coopY + 94].map((fy, i) => (
               <g key={i}>
                 <rect
                   x={coopX + coopW + 2}
                   y={fy}
-                  width={16}
-                  height={34}
-                  rx="3"
+                  width={14}
+                  height={28}
+                  rx="2.5"
                   fill="#fecaca"
                   stroke="#dc2626"
                   strokeWidth="1.5"
                 />
                 <line
-                  x1={coopX + coopW + 6}
-                  y1={fy + 8}
-                  x2={coopX + coopW + 14}
-                  y2={fy + 26}
+                  x1={coopX + coopW + 5}
+                  y1={fy + 6}
+                  x2={coopX + coopW + 13}
+                  y2={fy + 22}
                   stroke="#991b1b"
-                  strokeWidth="1.5"
+                  strokeWidth="1.3"
                 />
                 <line
-                  x1={coopX + coopW + 14}
-                  y1={fy + 8}
-                  x2={coopX + coopW + 6}
-                  y2={fy + 26}
+                  x1={coopX + coopW + 13}
+                  y1={fy + 6}
+                  x2={coopX + coopW + 5}
+                  y2={fy + 22}
                   stroke="#991b1b"
-                  strokeWidth="1.5"
+                  strokeWidth="1.3"
                 />
               </g>
             ))}
             <text
-              x={782}
+              x={780}
               y={coopY + coopH / 2}
               textAnchor="middle"
               fill="#991b1b"
-              fontSize="10"
+              fontSize="9.5"
               fontWeight="700"
-              transform={`rotate(90 782 ${coopY + coopH / 2})`}
+              transform={`rotate(90 780 ${coopY + coopH / 2})`}
             >
               {MESSAGES_EN.overview.mapLegendExhaust}
             </text>
@@ -400,17 +400,17 @@ export function CoopSvgMap({
                 {/* North / Top wall window */}
                 <rect
                   x={wx}
-                  y={coopY - 4}
-                  width={54}
-                  height={8}
+                  y={coopY - 3.5}
+                  width={52}
+                  height={7}
                   fill="#e0f2fe"
                   stroke="#0284c7"
-                  strokeWidth="1.5"
+                  strokeWidth="1.3"
                 />
                 <line
                   x1={wx}
                   y1={coopY}
-                  x2={wx + 54}
+                  x2={wx + 52}
                   y2={coopY}
                   stroke="#0284c7"
                   strokeWidth="1"
@@ -421,17 +421,17 @@ export function CoopSvgMap({
                   <>
                     <rect
                       x={wx}
-                      y={coopY + coopH - 4}
-                      width={54}
-                      height={8}
+                      y={coopY + coopH - 3.5}
+                      width={52}
+                      height={7}
                       fill="#e0f2fe"
                       stroke="#0284c7"
-                      strokeWidth="1.5"
+                      strokeWidth="1.3"
                     />
                     <line
                       x1={wx}
                       y1={coopY + coopH}
-                      x2={wx + 54}
+                      x2={wx + 52}
                       y2={coopY + coopH}
                       stroke="#0284c7"
                       strokeWidth="1"
@@ -444,34 +444,34 @@ export function CoopSvgMap({
             {/* 6. Architectural Main Entry Door (Bottom-Left Wall) */}
             <g aria-label="Main coop entry door">
               <rect
-                x={108}
-                y={coopY + coopH - 4}
-                width={38}
-                height={8}
+                x={100}
+                y={coopY + coopH - 3.5}
+                width={34}
+                height={7}
                 fill="#ffffff"
               />
               <line
-                x1={108}
+                x1={100}
                 y1={coopY + coopH}
-                x2={108}
-                y2={coopY + coopH + 34}
+                x2={100}
+                y2={coopY + coopH + 26}
                 stroke="#b45309"
-                strokeWidth="3"
+                strokeWidth="2.5"
                 strokeLinecap="round"
               />
               <path
-                d={`M 108 ${coopY + coopH + 34} A 34 34 0 0 0 142 ${coopY + coopH}`}
+                d={`M 100 ${coopY + coopH + 26} A 26 26 0 0 0 126 ${coopY + coopH}`}
                 fill="none"
                 stroke="#b45309"
-                strokeWidth="1.3"
+                strokeWidth="1.2"
                 strokeDasharray="3 3"
               />
               <text
-                x={126}
-                y={coopY + coopH + 46}
+                x={116}
+                y={coopY + coopH + 36}
                 textAnchor="middle"
                 fill="#92400e"
-                fontSize="10"
+                fontSize="9"
                 fontWeight="700"
               >
                 {MESSAGES_EN.overview.mapLegendDoor}
@@ -484,10 +484,10 @@ export function CoopSvgMap({
               return (
                 <path
                   key={`arrow-${sepIdx}`}
-                  d={`M ${ax - 12} ${coopY + 90} L ${ax + 10} ${coopY + 90} M ${ax + 5} ${coopY + 85} L ${ax + 11} ${coopY + 90} L ${ax + 5} ${coopY + 95}`}
+                  d={`M ${ax - 10} ${coopY + 54} L ${ax + 10} ${coopY + 54} M ${ax + 5} ${coopY + 50} L ${ax + 10} ${coopY + 54} L ${ax + 5} ${coopY + 58}`}
                   fill="none"
                   stroke="#94a3b8"
-                  strokeWidth="1.8"
+                  strokeWidth="1.6"
                   strokeLinecap="round"
                   strokeLinejoin="round"
                 />
@@ -499,42 +499,42 @@ export function CoopSvgMap({
               renderSensorDot({
                 zone,
                 cx: coopX + idx * zoneW + zoneW / 2,
-                cy: coopY + 88,
+                cy: coopY + 54,
               })
             )}
 
             {/* 8. Outdoor Reference Zone & Circular Sensor Dot */}
-            {outdoorZones.map((zone, idx) => {
-              const ox = 560 - idx * 240;
-              const oy = 258;
+            {outdoorZones.map((zone) => {
+              const ox = 440;
+              const oy = coopY + coopH + 10;
               return (
                 <g key={`outdoor-${zone.id}`}>
                   <rect
-                    x={ox - 92}
-                    y={oy - 12}
-                    width={260}
-                    height={68}
-                    rx={10}
+                    x={ox}
+                    y={oy}
+                    width={290}
+                    height={46}
+                    rx={8}
                     fill="#f8fafc"
                     stroke="#cbd5e1"
-                    strokeWidth="1.5"
+                    strokeWidth="1.3"
                     strokeDasharray="4 3"
                   />
                   <text
-                    x={ox - 78}
-                    y={oy + 14}
+                    x={ox + 14}
+                    y={oy + 20}
                     fill="#334155"
-                    fontSize="11.5"
+                    fontSize="10.5"
                     fontWeight="700"
                   >
                     {MESSAGES_EN.overview.outdoorZoneTag}
                   </text>
-                  <text x={ox - 78} y={oy + 31} fill="#64748b" fontSize="10">
+                  <text x={ox + 14} y={oy + 34} fill="#64748b" fontSize="9">
                     Outside coop wall
                   </text>
                   {renderSensorDot({
                     zone,
-                    cx: ox + 98,
+                    cx: ox + 220,
                     cy: oy + 12,
                   })}
                 </g>

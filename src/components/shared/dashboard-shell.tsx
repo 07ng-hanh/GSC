@@ -43,6 +43,7 @@ const NAV_ITEMS: readonly NavItem[] = [
   { href: "/cooling-plan", label: MESSAGES_EN.nav.coolingPlan, enabled: true },
   { href: "/compare", label: MESSAGES_EN.nav.compare, enabled: true },
   { href: "/settings", label: MESSAGES_EN.nav.settings, enabled: true },
+  { href: "/species", label: MESSAGES_EN.nav.species, enabled: true },
   { href: "/feeding", label: MESSAGES_EN.nav.feeding, enabled: true },
   { href: "/trends", label: MESSAGES_EN.nav.trends, enabled: true },
   { href: "/alerts", label: MESSAGES_EN.nav.alerts, enabled: true },

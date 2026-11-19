@@ -61,38 +61,38 @@ const CATEGORY_LABELS: Record<AlertCategory, { label: string; badgeClass: string
 
 function getDiagnosticHint(alert: Alert): string {
   if (alert.category === "device_offline") {
-    return "Node has not transmitted telemetry for over 10 minutes. Inspect ESP32 power supply, antenna alignment, and 2.4 GHz Wi-Fi coverage.";
+    return "Node stopped transmitting for >10 minutes. Check power adapter plug, wire connections, or Wi-Fi signal in this coop section.";
   }
   if (alert.category === "data_quality") {
     const flag = alert.params.flag;
     if (flag === "OUT_OF_RANGE") {
-      return "Sensor reading violates physical atmospheric bounds. Reading is quarantined and excluded from farm median THI to prevent false actuation.";
+      return "Sensor shows impossible numbers (e.g. >60°C). Probe may have fallen into wet litter, gotten unplugged, or wire chewed.";
     }
     if (flag === "FLATLINE") {
-      return "Sensor value is frozen with zero variance for ≥60m. Inspect probe for frozen I2C/analog bus or hardware latch-up.";
+      return "Sensor reading has remained frozen at the exact same number for >1 hour. Clean dust/manure off probe or restart sensor node power.";
     }
     if (flag === "SPIKE") {
-      return "Reading jumped >5°C within 5 minutes. Check for probe moisture ingress or transient electrical noise.";
+      return "Sudden temperature jump (>5°C in 5 min). Check if direct sunlight, brooding heat lamp, or hot motor is blowing directly onto probe.";
     }
     if (flag === "REF_DRIFT") {
-      return "Indoor reading deviates >10°C from outdoor reference during mild ambient conditions. Recalibrate DHT/SHT sensor.";
+      return "Indoor reading differs by >10°C from outdoor reference. Wipe probe clean with a dry cloth and verify mounting position.";
     }
-    return "Data quality anomaly detected. Reading is excluded from farm median THI.";
+    return "Data anomaly detected. Reading is safely excluded from barn control calculations to prevent false fan triggers.";
   }
   if (alert.category === "cooling_lock") {
     if (alert.severity === "critical") {
-      return "CRITICAL HAZARD: Misting is active while indoor RH is very high. Evaporative cooling stalls and causes wet litter and ammonia spikes.";
+      return "CRITICAL DANGER: Misting is running while humidity is dangerously high. Evaporative cooling stops working and causes wet litter and toxic ammonia. Fans forced to 100%!";
     }
-    return "Automated misting is paused due to high ambient humidity (RH ≥75%). Tunnel fans remain at full capacity to cool via wind-chill.";
+    return "Misting safely paused because humidity is high (RH ≥75%). Tunnel fans remain at full capacity to cool chickens via wind chill.";
   }
   if (alert.category === "thi_stress") {
     if (alert.severity === "critical") {
-      return "Severe heat stress (>29 THI) detected. Ensure all tunnel exhaust fans are operational and cooling pads or mist lines are primed.";
+      return "SEVERE HEAT ALERT (>29 THI): Broilers at imminent risk of heat prostration! Verify all tunnel fans are spinning and cooling pads are primed.";
     }
-    return "Heat stress (26–29 THI) reached. Automated cooling plan has engaged fans to lower bird feels-like temperature.";
+    return "Heat stress alert (26–29 THI): Automated cooling plan has engaged fans to cool the flock with wind chill.";
   }
   if (alert.category === "insurance_trigger") {
-    return "Parametric heat-stress index criteria met. Logged in the insurance ledger for claims auditing.";
+    return "Severe heat criteria met for 3 consecutive days. Automatic parametric insurance claim record logged for payout.";
   }
   return "Review environmental conditions and equipment schedule.";
 }

@@ -1,7 +1,9 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
 import {
+  ArrowRight,
   Bird,
   Calendar,
   CloudSun,
@@ -150,18 +152,28 @@ export function SettingsView() {
               {MESSAGES_EN.settings.subtitle}
             </p>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            size="sm"
-            onClick={() => {
-              resetConfig();
-              setFanLevelsDraft("0, 0.4, 0.6, 0.8, 1");
-            }}
-          >
-            <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
-            {MESSAGES_EN.settings.resetDefaultsBtn}
-          </Button>
+          <div className="flex flex-wrap items-center gap-2">
+            <Link
+              href="/species"
+              className="inline-flex items-center gap-1.5 rounded-md border border-indigo-300 bg-indigo-50/80 px-3 py-1.5 text-xs font-semibold text-indigo-950 hover:bg-indigo-100 transition-colors"
+            >
+              <Cpu className="h-3.5 w-3.5 text-indigo-700" />
+              <span>Species Profile &amp; Formulas</span>
+              <ArrowRight className="h-3.5 w-3.5" />
+            </Link>
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => {
+                resetConfig();
+                setFanLevelsDraft("0, 0.4, 0.6, 0.8, 1");
+              }}
+            >
+              <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
+              {MESSAGES_EN.settings.resetDefaultsBtn}
+            </Button>
+          </div>
         </CardContent>
       </Card>
 

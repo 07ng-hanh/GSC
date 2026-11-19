@@ -41,6 +41,7 @@ export const MESSAGES_EN = {
     resources: "Energy & Water",
     insurance: "Insurance",
     settings: "Settings",
+    species: "Species Profile",
     upcomingBadge: "Soon",
   },
   footer: {

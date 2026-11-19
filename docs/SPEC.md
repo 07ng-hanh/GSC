@@ -101,4 +101,4 @@
 - **M13**: Trang `Energy & Water` + Trang `Insurance` (kèm nhật ký gà thịt thủ công) (Đã hoàn thành).
 - **M14**: Khung Firebase Realtime Database (`FirebaseDataSource` stub, `database.rules.json`, `/docs/live-mode.md`) (Đã hoàn thành).
 - **M15**: Hoàn thiện responsive, `README.md`, hướng dẫn deploy Vercel, đồng bộ tài liệu (Đã hoàn thành).
-- **M16 (Milestone CUỐI — Tùy chỉnh theo loài)**: Trang quản lý `SpeciesProfile` (bao gồm chỉnh sửa toàn bộ tham số `SpeciesProfile.controller` ở mục 9, `customParams`, công thức `dbwb` / `nrc1971`, kiểm tra schema và xuất/nhập JSON).
+- **M16 (Milestone CUỐI — Tùy chỉnh theo loài)**: Trang quản lý `SpeciesProfile` (bao gồm chỉnh sửa toàn bộ tham số `SpeciesProfile.controller` ở mục 9, `customParams`, công thức `dbwb` / `nrc1971`, kiểm tra schema và xuất/nhập JSON) (Đã hoàn thành).

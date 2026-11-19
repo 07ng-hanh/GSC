@@ -88,7 +88,7 @@ const METRIC_OPTIONS: ReadonlyArray<{
   unit: string;
 }> = [
   { key: "thi", label: "Sensor Air THI", unit: "THI" },
-  { key: "tempC", label: "Temperature", unit: "°C" },
+  { key: "tempC", label: "Temperature & Age Target Curve", unit: "°C" },
   { key: "rhPct", label: "Humidity", unit: "%" },
 ];
 
@@ -933,6 +933,25 @@ export function TrendsView() {
             </div>
           </div>
 
+          {/* Quick Flock Age Curve Switcher for Farmers */}
+          {metricView === "thi" && (
+            <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-emerald-200 bg-emerald-50/70 px-3.5 py-2 text-xs text-emerald-950">
+              <span className="flex items-center gap-1.5 font-medium">
+                <Thermometer className="h-4 w-4 text-emerald-700 shrink-0" />
+                <span>
+                  Flock is currently on <strong>Day {flockLifecycle.ageDays} ({flockLifecycle.stageLabel})</strong> with target temperature <strong>{flockLifecycle.targetTempC.toFixed(1)}°C</strong>.
+                </span>
+              </span>
+              <button
+                type="button"
+                onClick={() => setMetricView("tempC")}
+                className="rounded-md bg-emerald-700 px-2.5 py-1 text-xs font-bold text-white shadow-2xs hover:bg-emerald-800 transition-colors"
+              >
+                Switch to Temperature to view Flock Age Target Curve →
+              </button>
+            </div>
+          )}
+
           {/* Series Toggles */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-t border-slate-100 pt-3">
             <div className="flex flex-wrap items-center gap-2">
@@ -1716,41 +1735,21 @@ export function TrendsView() {
         </CardContent>
       </Card>
 
-      {/* RFC-4180 CSV Schema & Provenance Card */}
+      {/* Farmer Data Export & Telemetry Summary Card */}
       <Card>
         <CardHeader className="pb-2">
           <CardTitle className="flex items-center gap-2 text-sm font-semibold text-slate-900">
             <Info className="h-4 w-4 text-blue-600" />
-            CSV Export Format &amp; Data Integrity ({CSV_HEADERS.length} columns ·
-            RFC-4180)
+            Excel / CSV Telemetry Export ({readings.length.toLocaleString()} rows ready)
           </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-3 text-xs text-slate-600">
+        <CardContent className="space-y-2 text-xs text-slate-600">
           <p>
-            Every exported row preserves both UTC and local{" "}
-            <strong>{effectiveTimeZone}</strong> timestamps, calculated{" "}
-            <code className="rounded bg-slate-100 px-1 py-0.5">thi</code>,{" "}
-            <code className="rounded bg-slate-100 px-1 py-0.5">
-              stress_level
-            </code>
-            , quality audit flags, and explicit{" "}
-            <code className="rounded bg-slate-100 px-1 py-0.5">source</code>{" "}
-            attribution (
-            <strong>
-              {config.mode === "simulated" ? "simulated" : "live"}
-            </strong>
-            ). Ready for export:{" "}
-            <strong>{readings.length.toLocaleString()}</strong> telemetry rows.
+            Exported spreadsheets contain complete timestamps in{" "}
+            <strong>{effectiveTimeZone}</strong>, indoor &amp; outdoor temperature (°C), relative humidity (%), computed THI, heat stress classifications, and sensor quality validation flags. Suitable for farm audit records, feed integration, or parametric insurance claims.
           </p>
-          <div className="flex flex-wrap gap-1.5">
-            {CSV_HEADERS.map((col) => (
-              <span
-                key={col}
-                className="rounded border border-slate-200 bg-slate-50 px-2 py-0.5 font-mono text-[11px] text-slate-700"
-              >
-                {col}
-              </span>
-            ))}
+          <div className="text-[11px] text-slate-500">
+            Standard format: RFC-4180 UTF-8 with BOM for 100% Vietnamese Excel compatibility.
           </div>
         </CardContent>
       </Card>

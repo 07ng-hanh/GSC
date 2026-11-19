@@ -71,6 +71,9 @@ import {
   calculateMortalitySummary,
   getSeedMortalityEntries,
   serializeMortalityToCsv,
+  validateSpeciesProfile,
+  serializeSpeciesProfile,
+  parseSpeciesProfileJson,
   type AppConfig,
   type CoolingState,
   type DeviceStatus,
@@ -2908,6 +2911,92 @@ console.log("\n=== M12: Advanced Data Quality + Alerts + Fault Scenarios ===");
   );
 }
 
+// === M16: SpeciesProfile Management & Customization Verification ===
+{
+  console.log("\n=== M16: SpeciesProfile Management, Formulas & Schema Validation ===");
+
+  const bp = DEFAULT_APP_CONFIG.speciesProfile;
+
+  // 1) Built-in Broiler Profile passes schema validation
+  const validRes = validateSpeciesProfile(bp);
+  assert.equal(validRes.valid, true, "Built-in profile must pass validation");
+  assert.equal(validRes.errors.length, 0);
+
+  // 2) Validation rejection on invalid inputs
+  const emptyRes = validateSpeciesProfile({});
+  assert.equal(emptyRes.valid, false);
+  assert(emptyRes.errors.length >= 3, "Empty object must fail multiple validation rules");
+
+  const invalidFormula = validateSpeciesProfile({
+    ...bp,
+    heatIndex: { ...bp.heatIndex, formulaId: "invalid_formula" as any },
+  });
+  assert.equal(invalidFormula.valid, false);
+  assert(invalidFormula.errors.some((e) => e.includes("formulaId must be one of")));
+
+  const invalidTau = validateSpeciesProfile({
+    ...bp,
+    controller: {
+      ...bp.controller,
+      tauMin: { value: -10, source: "assumption" },
+    },
+  });
+  assert.equal(invalidTau.valid, false);
+  assert(invalidTau.errors.some((e) => e.includes("tauMin must be a positive number")));
+
+  // 3) JSON Serialization & Deserialization Roundtrip
+  const jsonStr = serializeSpeciesProfile(bp);
+  assert(typeof jsonStr === "string" && jsonStr.includes('"id": "broiler"'));
+  const parseRes = parseSpeciesProfileJson(jsonStr);
+  assert.equal(parseRes.valid, true, "Parsed JSON must pass validation");
+  assert.equal(parseRes.profile?.id, bp.id);
+  assert.equal(parseRes.profile?.controller.horizonHours.value, bp.controller.horizonHours.value);
+  assert.equal(parseRes.profile?.controller.vFullMps.value, bp.controller.vFullMps.value);
+
+  // 4) Formula Selection & Calculation
+  const t = 32;
+  const rh = 65;
+  const thiMarai = calculateThi(t, rh, { formulaId: "marai2001", params: {}, source: "literature" });
+  const thiDbwb = calculateThi(t, rh, { formulaId: "dbwb", params: { w: 0.85, b: 0.15 }, source: "literature" });
+  const thiNrc = calculateThi(t, rh, { formulaId: "nrc1971", params: {}, source: "literature" });
+
+  assert(Math.abs(thiMarai - calculateMarai2001Thi(t, rh)) < 1e-4);
+  assert(Math.abs(thiDbwb - calculateDbwbThi(t, rh, 0.85, 0.15)) < 1e-4);
+  assert(Math.abs(thiNrc - calculateNrc1971Thi(t, rh)) < 1e-4);
+  assert(thiMarai > 20 && thiMarai < 40, "Marai THI should fall in standard tropical range");
+  assert(thiNrc > 70, "NRC 1971 THI is on Fahrenheit scale and should exceed 70");
+
+  // 5) Custom Params definition & validation
+  const customProfile = {
+    ...bp,
+    id: "layer_chicken",
+    name: "Commercial Layer",
+    isBuiltIn: false,
+    isUnverifiedCustomProfile: true,
+    customParams: [
+      {
+        key: "target_egg_production_pct",
+        label: "Target Laying Rate",
+        unit: "%",
+        type: "number" as const,
+        defaultValue: 92,
+        value: 90,
+        showOnOverview: true,
+        description: "Expected daily egg laying percentage.",
+        source: "user" as const,
+      },
+    ],
+  };
+  const customVal = validateSpeciesProfile(customProfile);
+  assert.equal(customVal.valid, true);
+  assert.equal(customVal.profile?.customParams.length, 1);
+  assert.equal(customVal.profile?.customParams[0]?.key, "target_egg_production_pct");
+
+  console.log(
+    `[PASS] M16 SpeciesProfile: Schema validation, JSON import/export roundtrip, marai2001/dbwb/nrc1971 formulas, and customParams verified`
+  );
+}
+
 console.log(
-  "=== ALL M1 + M2 + M3 + M4 (CO1) + M5 (CO2) + M6 (CO3) + CO4 + M9 + M11 + M12 + M13 + M14 CHECKS PASSED ==="
+  "=== ALL M1 + M2 + M3 + M4 (CO1) + M5 (CO2) + M6 (CO3) + CO4 + M9 + M11 + M12 + M13 + M14 + M16 CHECKS PASSED ==="
 );

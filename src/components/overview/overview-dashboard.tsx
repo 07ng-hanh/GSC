@@ -110,7 +110,7 @@ export function OverviewDashboard() {
       />
 
       {/* Focused 2-Column Workspace: 2D Floorplan with Sensor Dots + Selected Zone Telemetry & All-Zones Controls */}
-      <div className="grid gap-4 lg:grid-cols-12 lg:items-stretch">
+      <div className="grid gap-4 lg:grid-cols-12 lg:items-start">
         <div className="lg:col-span-7">
           <CoopSvgMap
             zones={config.zones}

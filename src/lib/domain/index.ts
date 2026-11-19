@@ -16,3 +16,4 @@ export * from "./planner";
 export * from "./plant";
 export * from "./feeding";
 export * from "./flock";
+export * from "./species-schema";

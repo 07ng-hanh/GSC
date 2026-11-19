@@ -999,6 +999,24 @@ export function CoolingPlanView() {
             </div>
           </div>
 
+          {/* Farmer Insight: Sensor Air vs Bird Feels-Like */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 w-full pt-1">
+            <div className="flex items-center gap-2 rounded-md border border-sky-200 bg-sky-50/70 p-2 text-xs">
+              <span className="h-2.5 w-2.5 rounded-full bg-sky-500 shrink-0" />
+              <div>
+                <strong className="text-sky-950">Sensor Air THI (Wall Meter):</strong>
+                <span className="text-sky-900 block text-[11px]">Ambient air temperature & humidity measured by sensors on barn walls.</span>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 rounded-md border border-emerald-200 bg-emerald-50/70 p-2 text-xs">
+              <span className="h-2.5 w-2.5 rounded-full bg-emerald-500 shrink-0" />
+              <div>
+                <strong className="text-emerald-950">Bird Feels-Like THI (Wind Chill):</strong>
+                <span className="text-emerald-900 block text-[11px]">What chickens actually experience — tunnel airflow cools birds by 2–4°C.</span>
+              </div>
+            </div>
+          </div>
+
           {/* Scrub slider + visible range indicator */}
           <div className="flex flex-wrap items-center gap-3 text-[11px] text-muted-foreground">
             <span className="font-mono whitespace-nowrap">
