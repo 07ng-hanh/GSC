@@ -1,0 +1,285 @@
+================================================================================
+           THERMASTOCK - HỆ THỐNG QUẢN LÝ NHIỆT ĐỘ CHUỒNG GÀ THỊT
+               SỔ TAY HƯỚNG DẪN SỬ DỤNG DÀNH CHO BÁC NÔNG DÂN
+                          Phiên bản: 1.0 - Năm 2026
+================================================================================
+
+
+********************************************************************************
+MỤC 1: GIỚI THIỆU TỔNG QUAN HỆ THỐNG
+********************************************************************************
+
+ThermaStock là hệ thống giám sát và tự động điều khiển vi khí hậu thông minh, được thiết kế chuyên biệt cho các trại nuôi GÀ THỊT (Broiler) quy mô công nghiệp tại Việt Nam. Hệ thống giúp bác nông dân giải quyết 3 bài toán sống còn:
+
+  * 1. Chống sốc nhiệt đàn gà: Tự động dự báo thời tiết trước 4 giờ để bật quạt đón đầu trước khi trời nắng gắt, không để gà bị ngộp thở hoặc chết nóng.
+
+  * 2. Tiết kiệm tiền điện & tiền nước: Thay vì bật quạt chạy thâu đêm suốt sáng lãng phí, hệ thống tính toán cấp số quạt biến tần vừa đủ mát cho gà, giảm từ 20% đến 40% chi phí tiền điện EVN.
+
+  * 3. Bảo vệ nền trấu & sức khỏe đường hô hấp: Tuyệt đối không phun sương khi trời ẩm ướt (trời nồm hoặc mưa dầm), tránh làm ướt phân trấu sinh khí độc amoniac.
+
+Hệ thống hoạt động với 2 chế độ: Chế độ Mô Phỏng (Simulation) dùng để làm quen, thử nghiệm các tình huống thời tiết; và Chế độ Trực Tiếp (Live) thu thập dữ liệu cảm biến thực từ chuồng nuôi qua chip ESP32.
+
+
+********************************************************************************
+MỤC 2: HIỂU VỀ CHỈ SỐ THI & 3 MỨC ĐỘ STRESS NHIỆT CỦA GÀ
+********************************************************************************
+
+Nhiều bà con thường nhìn nhiệt kế treo trên tường. Tuy nhiên, gà thịt không có tuyến mồ hôi, gà thải nhiệt qua hơi thở. Vì vậy độ ẩm không khí đóng vai trò quyết định: Trời 32°C mà ẩm 85% sẽ làm gà chết nhanh hơn nhiều so với trời 35°C mà không khí khô ráo!
+
+Hệ thống sử dụng chỉ số THI (Chỉ số Nhiệt - Ẩm Marai 2001 chuyên dụng cho gia cầm nhiệt đới):
+
+  * Vùng Xanh Lá (Comfort - Dưới 26.0 THI): Đàn gà thoải mái, ăn uống tốt, lớn nhanh, chuyển hóa thức ăn (FCR) tối ưu.
+
+  * Vùng Vàng Cam (Heat Stress - Từ 26.0 đến 29.0 THI): Gà bắt đầu thở dốc, há mỏ, xòe cánh, giảm ăn. Hệ thống sẽ tự động tăng tốc quạt và mở rèm che.
+
+  * Vùng Đỏ (Severe Heat Stress - Trên 29.0 THI): Vùng BÁO ĐỘNG ĐỎ. Gà có nguy cơ liệt tim, tụ đống và chết hàng loạt nếu không có quạt thông gió tốc độ cao thổi trực tiếp qua thân gà.
+
++----------------------------------------------------------------------------+
+| [!] LƯU Ý VÀNG VỀ HIỆU ỨNG GIÓ LÀM MÁT (WIND CHILL)
+| Quạt hút công nghiệp tạo ra luồng gió thổi dọc thân gà (tốc độ từ 1.5 đến 2.5 m/s). Gió thổi qua lông gà mang nhiệt đi, làm gà 'cảm thấy' mát hơn từ 2 đến 4 độ so với nhiệt độ đo trên nhiệt kế gắn tường! Trên biểu đồ hệ thống, đường 'Bird Feels-Like THI' chính là nhiệt độ thực tế mà con gà cảm nhận được.
++----------------------------------------------------------------------------+
+
+
+********************************************************************************
+MỤC 3: THANH ĐIỀU HƯỚNG VÀ BẢNG ĐIỀU KHIỂN ĐỈNH TRANG
+********************************************************************************
+
+Tại đỉnh trang web, bà con luôn nhìn thấy thanh công cụ tiện ích:
+
+  * Dòng chữ cam 'SIMULATED DATA - not measured': Báo cho bà con biết hệ thống đang ở chế độ chạy thử nghiệm trên máy tính, chưa nối cảm biến thật ngoài chuồng.
+
+  * Mục Kịch bản (Scenario): Cho phép bà con chọn thử các thời tiết khác nhau: Ngày bình thường (Normal), Trưa nắng gắt (Hot Day), Đợt nắng nóng 3 ngày (Heatwave), Mùa mưa ẩm ướt (Humid Monsoon), Lỗi cảm biến (Sensor Faults), hoặc Mất mạng (Network Outage).
+
+  * Tuổi đàn (Age): Hiển thị ngày tuổi của đàn gà (ví dụ 28d). Bấm vào để đổi tuổi đàn. Gà con dưới 21 ngày sẽ tự động khóa làm mát để tránh cảm lạnh.
+
+  * Đồng hồ & Tốc độ tua (1x, 60x, 600x): Nút 1x là chạy giờ thực; 60x và 600x giúp bà con tua nhanh 24 giờ trong vòng vài giây để xem dự báo cả ngày đêm.
+
+  * Nút Chuông cảnh báo (Alerts): Hiện số lượng cảnh báo sự cố đang cần kiểm tra (xanh lá = 0 lỗi an toàn, đỏ = có sự cố).
+
+
+********************************************************************************
+MỤC 4: TRANG 1: OVERVIEW (TỔNG QUAN CHUỒNG NUÔI)
+********************************************************************************
+
+Đây là màn hình chính bà con nên bật hàng ngày để quản lý chuồng. Giao diện chia thành 3 phần rõ ràng:
+
+--- 1. Đồng hồ đo THI & Chỉ số vận hành (Hàng trên cùng) ---
+
+  * Coop Median THI: Con số lớn nhất ở góc trái, hiển thị giá trị stress nhiệt trung bình của cả chuồng (được tính thông minh bằng cách lấy trung vị, tự động loại trừ các cảm biến bị hư).
+
+  * Flock Age & Target Temp: Tuổi gà hiện tại và Nhiệt độ tiêu chuẩn khuyến cáo theo ngày tuổi.
+
+  * Active Load: Tổng công suất điện của các quạt và bơm đang chạy (kW) và lưu lượng nước (L/h).
+
+--- 2. Dải khuyến cáo làm mát tự động (Active Auto Cooling Plan) ---
+
+Thanh tóm tắt gợi ý nhanh: Máy tính đang chạy chế độ nào (Ví dụ: Smart Forecast Auto), tốc độ quạt hiện tại đề xuất (40%, 60% hay 100%), và lý do ngắn gọn (Ví dụ: 'Nắng nóng tăng dần lúc 13h, đang chạy quat 60% để giải nhiệt').
+
+--- 3. Sơ đồ 2D Mặt Bằng Chuồng Gà & Bảng điều khiển thiết bị ---
+
+  * Sơ đồ 2D (Bên trái): Vẽ mặt bằng chuồng gà với vị trí cửa vào, giàn mát, quạt hút phía đuôi và 3 cụm cảm biến Đầu chuồng (Front), Giữa chuồng (Center), Đuôi chuồng (Rear). Các vòng tròn đổi màu theo độ nóng. Bấm vào bất kỳ vòng tròn nào để chọn vung đó.
+
+  * Bảng điều khiển thiết bị (Bên phải): Mỗi vùng đều có công tắc bật/tắt Quạt (Fan), Bơm phun sương (Mist), và Rèm che (Curtain).
+
++----------------------------------------------------------------------------+
+| [!] QUY TẮC AN TOÀN TUYỆT ĐỐI VỀ ĐỘ ẨM & PHUN SƯƠNG
+| Hệ thống tự động KHÓA bơm phun sương khi Độ ẩm trong chuồng (RH) vượt quá 80%. Nếu bà con cố tình gạt tay công tắc bật phun sương lúc độ ẩm cao, hệ thống sẽ hiện cảnh báo đỏ chớp nháy: 'LIVESTOCK HAZARD: Misting ON at High Humidity'. Phun nước lúc này chỉ làm chuồng bí bách và gà chết ngạt!
++----------------------------------------------------------------------------+
+
+
+********************************************************************************
+MỤC 5: TRANG 2: COOLING PLAN (KẾ HOẠCH LÀM MÁT 4 GIỜ)
+********************************************************************************
+
+Trang này thể hiện khả năng 'nhìn trước tương lai' của hệ thống. Thay vì đợi gà nóng mới bật quạt, hệ thống dự báo trước 4 giờ tới để điều chỉnh thiết bị tối ưu.
+
+  * Biểu đồ nhiệt 4 giờ tới (Indoor Heat Outlook): Cho bà con thấy đường nhiệt độ ngoài trời (xám), nhiệt độ trong chuồng nếu không bật quạt (đỏ), và đường xanh lá là nhiệt độ gà thực tế cảm nhận được khi hệ thống bật quạt làm mát.
+
+  * Bảng lịch trình thiết bị từng 15 phút: Ghi rõ lúc mấy giờ quạt sẽ chạy mức nào (40%, 60%, 80%, 100%), lưu lượng gió tạo ra là bao nhiêu mét/giây, và tốn bao nhiêu số điện (kWh).
+
+  * Cơ chế tự chuyển đổi dự phòng (Fallback): Nếu đường truyền internet bị mất hoặc trạm thời tiết bị ngắt quá 3 giờ, hệ thống sẽ tự động bật cờ 'Trend Auto' (chạy theo quán tính nhiệt độ thực tế của chuồng), đảm bảo an toàn tuyệt đối cho gà.
+
+
+********************************************************************************
+MỤC 6: TRANG 3: COMPARE (SO SÁNH HIỆU QUẢ CÁC PHƯƠNG PHÁP)
+********************************************************************************
+
+Trang này giúp chủ trại trả lời câu hỏi: 'Dùng hệ thống thông minh này thì tôi lợi hơn cách nuôi truyền thống cũ bao nhiêu?'
+
+Hệ thống đem so sánh song song 4 phương pháp trên cùng một ngày thời tiết:
+
+  * B1 - Hẹn giờ cơ học (Timer): Cứ 8h sáng bật quạt, 20h tối tắt quạt. Cách này tốn điện khủng khiếp vào ngày mát và làm chết gà nếu buổi trưa quá nóng.
+
+  * B2 - Rơ-le nhiệt độ (Thermostat 28°C): Cứ thấy nhiệt độ trên 28°C là bật quạt. Bị nhược điểm là không biết trời đang ẩm hay khô.
+
+  * B3 - Ngưỡng THI phản ứng tức thời: Đạt ngưỡng mới bật, hay bị giật cục và đóng ngắt quạt liên tục gây hại mô-tơ.
+
+  * ThermaStock Smart Auto: Điều khiển đón đầu theo dự báo, quạt tăng tốc êm ái, khóa phun sương lúc ẩm.
+
+Bảng kết quả 24 giờ sẽ chỉ rõ: Số kWh điện tiêu thụ mỗi ngày, số lít nước phun sương, và số giờ đàn gà bị nóng quá mức.
+
+
+********************************************************************************
+MỤC 7: TRANG 4: SETTINGS (CÀI ĐẶT HỆ THỐNG)
+********************************************************************************
+
+Trang dành cho chủ trại điều chỉnh các chế độ theo ý muốn:
+
+  * Thanh trượt Ưu tiên Mát hay Tiết kiệm điện (Comfort vs Energy): Kéo hết sang trái = Ưu tiên làm mát tối đa cho gà; Ở giữa = Cân bằng hoàn hảo; Kéo sang phải = Tiết kiệm điện tối đa.
+
+  * Chế độ điều khiển: Lựa chọn Smart Forecast Auto (Dự báo thông minh), Trend Auto (Theo xu hướng), hoặc Traditional Auto (Truyền thống).
+
+  * Cấu hình Trạm dự báo thời tiết: Chọn kết nối dịch vụ thời tiết vệ tinh Open-Meteo theo tọa độ GPS trang trại của bạn, hoặc chế độ mô phỏng nội bộ.
+
+  * Định mức thiết bị quạt & bơm: Khai báo công suất mô-tơ quạt (0.37 kW, 0.55 kW, 0.75 kW...) để hệ thống tính tiền điện chính xác.
+
+
+********************************************************************************
+MỤC 8: TRANG 5: FEEDING (LỊCH CHO ĂN CHỐNG SỐC NHIỆT)
+********************************************************************************
+
+Khoa học chăn nuôi đã chứng minh: Khi gà ăn no, quá trình tiêu hóa trong ruột tỏa ra một lượng nhiệt sinh học cực lớn. Nếu gà ăn đẫy diều đúng vào lúc 12h - 14h trưa nắng gắt, thân nhiệt gà tăng vọt từ bên trong và gà sẽ chết vì xuất huyết phổi hoặc kiệt sức!
+
+  * Nguyên lý Dịch Chuyển Khẩu Phần (Temporal Feed Shifting): Hệ thống khuyến cáo khóa máng ăn trước thời điểm đỉnh nóng 2 đến 3 tiếng (thường từ 10h sáng đến 16h chiều), và dồn lượng cám đó cho gà ăn vào lúc sáng sớm mát mẻ (4h - 8h) và ban đêm (19h - 23h).
+
+  * Tổng lượng cám trong ngày vẫn giữ nguyên 100%: Gà vẫn tăng trọng đều mà không hề bị sốc nhiệt.
+
+  * 5 Thẻ khuyến nghị dinh dưỡng R1 - R5: Cung cấp kiến thức về bổ sung chất điện giải, hạ đạm thô, tăng axit amin tổng hợp và điều chỉnh độ bền viên cám vào mùa hè.
+
++----------------------------------------------------------------------------+
+| [!] LƯU Ý QUAN TRỌNG
+| Trang Feeding chỉ mang tính chất TƯ VẤN HƯỚNG DẪN cho người chăn nuôi chủ động điều khiển tời nâng hạ máng ăn. Hệ thống không tự động điều khiển đóng mở bồn si-lô cám.
++----------------------------------------------------------------------------+
+
+
+********************************************************************************
+MỤC 9: TRANG 6: TRENDS (XU HƯỚNG THEO DÕI & XUẤT FILE CSV)
+********************************************************************************
+
+Giúp bà con kiểm tra lại toàn bộ lịch sử nhiệt độ, độ ẩm và tình trạng đàn gà từ 6 giờ trước cho đến 30 ngày qua.
+
+  * Biểu đồ đường nhiệt độ & độ ẩm lịch sử: Dễ dàng xem lại xem đêm qua chuồng có bị lạnh quá không, trưa hôm qua nhiệt độ lúc mấy giờ là cao nhất.
+
+  * Đường nhiệt độ mục tiêu theo tuổi (Age Target Curve): Hiện đường chuẩn nhiệt độ cần duy trì cho đàn gà từ khi úm (32°C ngày 1) giảm dần đến khi xuất chuồng (24°C ngày 42).
+
+  * Biểu đồ cột giờ stress nhiệt theo ngày: Tổng kết mỗi ngày đàn gà có bao nhiêu tiếng ở vùng mát (Xanh), bao nhiêu tiếng bị nóng nhẹ (Vàng) và bao nhiêu tiếng bị nóng nguy hiểm (Đỏ).
+
+  * Nút Xuất CSV (Export Telemetry CSV): Tải toàn bộ số liệu ra file Excel chuẩn chỉ bằng 1 cú nhấp chuột để lưu trữ hoặc gửi cho cán bộ kỹ thuật công ty thức ăn.
+
+
+********************************************************************************
+MỤC 10: TRANG 7: ALERTS (CẢNH BÁO & BẮT BỆNH CẢM BIẾN)
+********************************************************************************
+
+Màn hình trực ban giúp chủ trại nắm bắt tức thì các trục trặc kỹ thuật trong chuồng:
+
+  * Cảnh báo Mức Đỏ (Critical): Nhiệt độ chuồng vượt ngưỡng nguy hiểm, hoặc đứt kết nối cảm biến quá 10 phút.
+
+  * Cảnh báo Mức Vàng (Warning): Cảm biến bị nhảy số đột ngột (>5°C trong 5 phút), hoặc cảm biến bị kẹt cứng 1 giá trị suốt 1 tiếng (Flatline) do bị bám bụi cám hay mạng nhện.
+
+  * Xử lý cảnh báo (Acknowledge): Bà con bấm nút 'Acknowledge' để đánh dấu là mình đã nhận được tin và đang cho người đi kiểm tra khắc phục.
+
+  * Cơ chế tự bảo vệ: Nếu một cảm biến bị đứt dây hoặc báo nhiệt độ vô lý (ví dụ nhảy lên 70°C), hệ thống tự động gạt bỏ cảm biến đó ra khỏi phép tính trung bình, không để hệ thống bị 'đánh lừa' mà bật nhầm thiết bị.
+
+
+********************************************************************************
+MỤC 11: TRANG 8: ENERGY & WATER (CHI PHÍ ĐIỆN & NƯỚC)
+********************************************************************************
+
+Bảng kê khai tài chính rõ ràng từng đồng chi phí vận hành:
+
+  * Tổng số điện đã tiêu thụ (Smart Electricity Used - kWh).
+
+  * Số tiền điện tiết kiệm được (Estimated Utility Savings) tính theo giá điện sản xuất EVN (2.000 đ/kWh).
+
+  * Lượng nước giàn mát và phun sương đã dùng (Lít) tính theo giá nước 15 đ/Lít (15.000 đ/m³).
+
+  * Lượng phát thải CO2 giảm thiểu được ra môi trường.
+
+  * Bảng phân tích thiết bị theo từng vùng: Xem quạt gián tiếp đầu chuồng chạy mấy tiếng, quạt hút đuôi chuồng chạy mấy tiếng.
+
+
+********************************************************************************
+MỤC 12: TRANG 9: INSURANCE (BẢO HIỂM NHIỆT & SỔ HỦY GÀ)
+********************************************************************************
+
+Trang này có 2 chức năng cực kỳ giá trị để bảo vệ tài sản của bà con:
+
+--- 1. Giám sát Bảo hiểm nhiệt tham số (Parametric Insurance) ---
+
+Chính sách bảo hiểm liên kết: Nếu nhiệt độ chuồng nuôi vượt quá ngưỡng THI 29.0 trong 3 NGÀY LIÊN TIẾP, hợp đồng bảo hiểm sẽ tự động kích hoạt bồi thường tiền mà không cần chờ giám định viên xuống đo đạc phức tạp.
+
+  * Trạng thái 'Monitoring (Safe)': Chuồng bình thường, chưa có ngày nào vượt ngưỡng.
+
+  * Trạng thái 'High Risk - Warning': Đã có 1 hoặc 2 ngày liên tiếp bị sốc nhiệt nặng, cảnh báo chủ trại tập trung giải nhiệt.
+
+  * Trạng thái 'Triggered': Đã chạm mốc 3 ngày liên tiếp, hồ sơ bồi thường bảo hiểm đã được xác nhận tự động.
+
+--- 2. Sổ Nhật Ký Kiểm Tra & Hao Hụt Đàn Gà (Mortality Diary) ---
+
+Thay vì ghi chép ra sổ tay dễ ướt rách, bà con ghi trực tiếp vào trang web:
+
+  * Bấm 'Add Mortality Record': Nhập ngày kiểm tra, ngày tuổi gà, số lượng gà chết, số lượng gà loại thải.
+
+  * Chọn nguyên nhân chính: Chết sốc nhiệt (Heat prostration), tụ đống ngạt thở ở quạt đuôi (Smothering pile), đột tử (Sudden death), hoặc bệnh hô hấp.
+
+  * Bấm 'Export Mortality CSV': Tải file danh sách gà chết ra Excel có đóng dấu thời gian chuẩn để nộp thanh toán tiền bảo hiểm hoặc báo cáo công ty gia công.
+
+
+********************************************************************************
+MỤC 13: TRANG 10: SPECIES PROFILE (HỒ SƠ GIỐNG GÀ)
+********************************************************************************
+
+Trang quản lý hồ sơ sinh học chuyên sâu của giống gà nuôi (mặc định cấu hình chuẩn cho giống gà thịt công nghiệp Ross 308 / Cobb 500):
+
+  * Lựa chọn công thức THI: Hỗ trợ 3 công thức quốc tế: Marai 2001 (chuẩn gia cầm), DB-WB (nhiệt kế khô - nhiệt kế ướt Stull 2011), và NRC 1971.
+
+  * Công cụ tính thử THI nhanh: Bà con có thể nhập nhanh Nhiệt độ (°C) và Độ ẩm (%) bất kỳ để xem ngay con gà cảm thấy thế nào và ở mức cảnh báo màu gì.
+
+  * Thông số bộ điều khiển: Dành cho kỹ sư trang trại tinh chỉnh độ trễ quạt, mức gió tối đa (3.0 m/s), ngưỡng khóa ẩm.
+
+  * Xuất / Nhập JSON: Cho phép lưu hồ sơ giống gà ra file máy tính để sao chép cấu hình sang trại nuôi khác.
+
++----------------------------------------------------------------------------+
+| [!] LỜI KHUYÊN BÁC NÔNG DÂN
+| Các thông số tại trang Species Profile đã được các kỹ sư tính toán tối ưu sẵn cho giống gà thịt nuôi tại khí hậu Việt Nam. Bà con không cần tự ý sửa đổi các tham số vật lý nếu chưa tham khảo ý kiến kỹ thuật viên.
++----------------------------------------------------------------------------+
+
+
+********************************************************************************
+MỤC 14: NHẬT KÝ VẬN HÀNH 1 NGÀY MẪU CỦA NGƯỜI NÔNG DÂN
+********************************************************************************
+
+Để sử dụng hệ thống hiệu quả và nhàn nhã nhất, bà con chỉ cần làm theo các bước sau mỗi ngày:
+
+  * 06:00 Sáng: Mở trang 'Overview'. Nhìn lướt qua con số THI và biểu tượng chuông báo. Nếu chuông hiện '0 Alerts' màu xanh là chuồng đêm qua an toàn.
+
+  * 07:00 Sáng: Bấm sang tab 'Cooling Plan'. Xem biểu đồ 4 giờ tới. Nếu thấy trưa nay đường màu đỏ leo cao vượt mốc 29, kiểm tra téc nước phun sương và kiểm tra cầu dao quạt hút xem sẵn sàng chưa.
+
+  * 09:30 Sáng: Kiểm tra tab 'Feeding'. Nếu có khuyến cáo 'Heat withdrawal window' (khoảng ngắt cám), tiến hành quay tời nâng máng ăn lên để gà nghỉ ngơi.
+
+  * 13:00 - 15:00 Chiều: Mở điện thoại hoặc máy tính xem sơ đồ 2D chuồng. Đảm bảo các quạt đang quay và bơm không bị nghẹt béc.
+
+  * 17:30 Chiều: Hạ máng ăn cho gà ăn bù vào lúc trời mát theo lịch của tab Feeding.
+
+  * 18:00 Tối: Vào tab 'Insurance' bấm 'Add Mortality Record' ghi nhận số gà chết gom được trong ngày (nếu có) để hoàn thành nhật ký nuôi.
+
+
+********************************************************************************
+MỤC 15: TỔNG HỢP CÁC LƯU Ý & CÂU HỎI THƯỜNG GẶP (FAQ)
+********************************************************************************
+
+  * Hỏi: Tại sao quạt đang chạy ầm ầm mà nhiệt độ trên nhiệt kế phòng không hạ nhiều?Đáp: Quạt hút tạo gió làm mát trực tiếp trên da và lông con gà (hạ nhiệt cảm nhận), chứ không phải máy lạnh điều hòa hạ nhiệt không khí. Nhìn vào đường 'Bird Feels-Like THI' trên biểu đồ để biết con gà mát bao nhiêu.
+
+  * Hỏi: Tại sao trời nóng 33°C mà hệ thống không chịu phun sương?Đáp: Hãy nhìn vào độ ẩm (RH). Nếu độ ẩm trên 80% (trời sắp mưa hoặc trời nồm), hệ thống tự ngắt phun sương để cứu gà không bị ngạt thở và tránh ướt đẫm trấu.
+
+  * Hỏi: Gà nhà tôi mới thả nuôi được 10 ngày tuổi, sao không bật được quạt tự động?Đáp: Gà dưới 21 ngày tuổi đang giai đoạn úm (Brooding), cần giữ ấm. Hệ thống khóa tự động làm mát để bảo vệ gà con khỏi chết vì lạnh.
+
+  * Hỏi: Mất mạng internet chuồng có bị chết nóng không?Đáp: KHÔNG! Hệ thống có cơ chế tự động chuyển sang chế độ dự phòng 'Trend Auto'. Nó sẽ dùng cảm biến vật lý tại chỗ để tự bật quạt bảo vệ gà an toàn.
+
+
+================================================================================
+MỌI THẮC MẮC XIN LIÊN HỆ ĐỘI NGŨ KỸ THUẬT THERMASTOCK:
+Email: support@thermastock.vn | Hotline kỹ thuật: 1900-xxxx
+Chúc bà con vụ nuôi bội thu, đàn gà khỏe mạnh, lớn nhanh và tiết kiệm chi phí!
+================================================================================

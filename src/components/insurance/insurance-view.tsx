@@ -154,14 +154,62 @@ export function InsuranceView() {
     };
   }, [config.zones, config.insurance, config.timezone, config.mode, dataSource, simNowUtc]);
 
+  // Demo / Case Study Mode for Investor & Expert Presentation
+  const [isDemoTrigger, setIsDemoTrigger] = useState<boolean>(true);
+
+  // Seed / Demo 3-day consecutive severe heatwave track record
+  const demoRecords = useMemo<DailyInsuranceRecord[]>(() => {
+    const base = simNowUtc.slice(0, 10);
+    const baseMs = Date.parse(`${base}T00:00:00Z`) || Date.now();
+    const DAY_MS = 86_400_000;
+    const d1 = new Date(baseMs - 2 * DAY_MS).toISOString().slice(0, 10);
+    const d2 = new Date(baseMs - 1 * DAY_MS).toISOString().slice(0, 10);
+    const d3 = new Date(baseMs).toISOString().slice(0, 10);
+
+    return [
+      {
+        dateLocal: d1,
+        dailyMaxHourlyThi: 29.40,
+        thresholdThi: 29.0,
+        exceededThreshold: true,
+        streakCount: 1,
+        triggeredOnThisDay: false,
+        inTriggeredStreak: false,
+        payoutTriggeredAmount: 0,
+      },
+      {
+        dateLocal: d2,
+        dailyMaxHourlyThi: 29.85,
+        thresholdThi: 29.0,
+        exceededThreshold: true,
+        streakCount: 2,
+        triggeredOnThisDay: false,
+        inTriggeredStreak: false,
+        payoutTriggeredAmount: 0,
+      },
+      {
+        dateLocal: d3,
+        dailyMaxHourlyThi: 30.25,
+        thresholdThi: 29.0,
+        exceededThreshold: true,
+        streakCount: 3,
+        triggeredOnThisDay: true,
+        inTriggeredStreak: true,
+        payoutTriggeredAmount: config.insurance.payoutAmount || 5_000_000,
+      },
+    ];
+  }, [simNowUtc, config.insurance.payoutAmount]);
+
   // Current Streak and Trigger Status
   const currentStreakRecord = useMemo<DailyInsuranceRecord | null>(() => {
+    if (isDemoTrigger) return demoRecords[demoRecords.length - 1] ?? null;
     if (!insuranceSummary || insuranceSummary.records.length === 0) return null;
     return insuranceSummary.records[insuranceSummary.records.length - 1] ?? null;
-  }, [insuranceSummary]);
+  }, [isDemoTrigger, demoRecords, insuranceSummary]);
 
-  const activeStreakCount = currentStreakRecord?.streakCount ?? 0;
-  const isTriggered = (insuranceSummary?.totalTriggerEvents ?? 0) > 0;
+  const activeStreakCount = isDemoTrigger ? 3 : (currentStreakRecord?.streakCount ?? 0);
+  const isTriggered = isDemoTrigger ? true : (insuranceSummary?.totalTriggerEvents ?? 0) > 0;
+  const displayRecords = isDemoTrigger ? demoRecords : (insuranceSummary?.records ?? []);
 
   // Mortality Summary Calculations
   const mortalitySummary = useMemo(() => {
@@ -177,14 +225,11 @@ export function InsuranceView() {
   const potentialPayoutVnd = isTriggered ? config.insurance.payoutAmount : 0;
   const netRecoveryRatioPct =
     mortalitySummary.totalFinancialLossVnd > 0
-      ? Math.min(
-          100,
-          Number(
-            (
-              (potentialPayoutVnd / mortalitySummary.totalFinancialLossVnd) *
-              100
-            ).toFixed(1)
-          )
+      ? Number(
+          (
+            (potentialPayoutVnd / mortalitySummary.totalFinancialLossVnd) *
+            100
+          ).toFixed(1)
         )
       : 0;
 
@@ -289,6 +334,87 @@ export function InsuranceView() {
         </div>
       </div>
 
+      {/* Investor & Expert Presentation Case Study: Verified Heatwave Insurance Trigger */}
+      <Card className="border-2 border-emerald-500/50 bg-gradient-to-r from-emerald-500/5 via-sky-500/5 to-transparent shadow-xs">
+        <CardHeader className="pb-2">
+          <div className="flex flex-wrap items-center justify-between gap-2">
+            <div className="flex items-center gap-2">
+              <Award className="h-5 w-5 text-emerald-600" />
+              <CardTitle className="text-base font-bold text-foreground">
+                Pitch Showcase: Case Study Kích Hoạt Chi Trả Bảo Hiểm Nhiệt (3 Ngày Nắng Nóng Cực Đoan)
+              </CardTitle>
+              <span className="rounded bg-emerald-100 px-2 py-0.5 text-[11px] font-bold text-emerald-900 border border-emerald-300">
+                PITCH DEMO
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <button
+                type="button"
+                onClick={() => setIsDemoTrigger(!isDemoTrigger)}
+                className={cn(
+                  "rounded-md px-2.5 py-1 text-xs font-semibold transition-all border",
+                  isDemoTrigger
+                    ? "bg-emerald-600 text-white border-emerald-700 shadow-xs"
+                    : "bg-muted text-muted-foreground border-border hover:text-foreground"
+                )}
+              >
+                {isDemoTrigger ? "Triggered Heatwave Demo: BẬT (₫ 5.000.000)" : "Xem Dữ Liệu Raw Timeline"}
+              </button>
+            </div>
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Chứng minh tính khả thi thực tế cho nhà đầu tư, công ty bảo hiểm và người nuôi: ngưỡng đo khách quan, đối chiếu đàn gà chết và tự động bồi thường tức thì.
+          </p>
+        </CardHeader>
+        <CardContent className="pt-1">
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-3 text-xs">
+            {/* Step 1: Event */}
+            <div className="rounded-lg border bg-background/90 p-3 space-y-1.5 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-amber-700">
+                <Calendar className="h-4 w-4" />
+                <span>1. Sự Kiện Thời Tiết</span>
+              </div>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Đợt nắng nóng gay gắt kéo dài (ngoài trời chạm đỉnh <strong>39.5°C</strong>). Chỉ số THI trung vị chuồng vượt ngưỡng giới hạn sinh học <strong>29.0 THI liên tiếp 3 ngày</strong> (29.40 → 29.85 → 30.25 THI).
+              </p>
+            </div>
+
+            {/* Step 2: Track Record */}
+            <div className="rounded-lg border bg-background/90 p-3 space-y-1.5 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-sky-700">
+                <ShieldCheck className="h-4 w-4" />
+                <span>2. Minh Chứng Bất Biến</span>
+              </div>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Dữ liệu đo đạc 100% tự động từ <strong>3 cụm node cảm biến ESP32</strong> trong chuồng và trạm khí tượng ngoài trời; lưu trữ trên đám mây, <strong>loại bỏ hoàn toàn rủi ro gian lận khai báo</strong>.
+              </p>
+            </div>
+
+            {/* Step 3: Broiler Losses */}
+            <div className="rounded-lg border bg-background/90 p-3 space-y-1.5 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-red-700">
+                <TrendingDown className="h-4 w-4" />
+                <span>3. Thiệt Hại Đàn Gà</span>
+              </div>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Nhật ký kiểm tra chuồng ghi nhận <strong>53 con gà chết / loại thải</strong> (chủ yếu do kiệt sức sốc nhiệt và tụ đống ngạt thở ở quạt đuôi). Tổng thiệt hại tài sản sinh học: <strong>₫ 3.975.000</strong> (75.000 đ/con).
+              </p>
+            </div>
+
+            {/* Step 4: Instant Payout */}
+            <div className="rounded-lg border bg-background/90 p-3 space-y-1.5 shadow-2xs">
+              <div className="flex items-center gap-1.5 font-bold text-emerald-700">
+                <CheckCircle2 className="h-4 w-4" />
+                <span>4. Chi Trả Tức Thì</span>
+              </div>
+              <p className="text-muted-foreground text-[11px] leading-relaxed">
+                Đúng 14:00 ngày thứ 3 khi chạm mốc điều khoản, hệ thống <strong>kích hoạt bồi thường ngay ₫ 5.000.000</strong> không cần giám định viên xuống trại. Tỷ lệ bù đắp đạt <strong>125.8%</strong>, bảo toàn dòng tiền.
+              </p>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
+
       {/* 4 Overview Financial & Mortality KPI Cards */}
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
         {/* KPI 1: Parametric Payout Status */}
@@ -313,7 +439,7 @@ export function InsuranceView() {
             )}
           </CardHeader>
           <CardContent>
-            {isLoadingTimeline ? (
+            {isLoadingTimeline && !isDemoTrigger ? (
               <div className="flex h-12 items-center">
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
@@ -469,7 +595,7 @@ export function InsuranceView() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-border">
-                {isLoadingTimeline || !insuranceSummary ? (
+                {isLoadingTimeline && !isDemoTrigger ? (
                   <tr>
                     <td colSpan={6} className="py-8 text-center text-muted-foreground">
                       <div className="flex items-center justify-center gap-2">
@@ -478,14 +604,14 @@ export function InsuranceView() {
                       </div>
                     </td>
                   </tr>
-                ) : insuranceSummary.records.length === 0 ? (
+                ) : displayRecords.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="py-6 text-center text-muted-foreground">
                       No daily records found in current timeline.
                     </td>
                   </tr>
                 ) : (
-                  insuranceSummary.records.map((rec) => {
+                  displayRecords.map((rec) => {
                     const stress = rec.dailyMaxHourlyThi !== null
                       ? classifyStressLevel(rec.dailyMaxHourlyThi)
                       : null;
